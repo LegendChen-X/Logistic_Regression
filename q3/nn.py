@@ -5,7 +5,7 @@ To start with training, you need to fill in the incomplete code. There are 3
 places that you need to complete:
 a) Backward pass equations for an affine layer (linear transformation + bias).
 b) Backward pass equations for ReLU activation function.
-c) Weight update equations with momentum.
+c) Weight update equations.
 
 After correctly fill in the code, modify the hyperparameters in "main()".
 You can then run this file with the command: "python nn.py" in your terminal.
@@ -63,7 +63,7 @@ def affine_backward(grad_y, x, w):
     :param w: Weights
     :return: A tuple of (grad_h, grad_w, grad_b)
         WHERE
-        grad_h: Gradients wrt. the inputs/hidden layer.
+        grad_x: Gradients wrt. the inputs/hidden layer.
         grad_w: Gradients wrt. the weights.
         grad_b: Gradients wrt. the biases.
     """

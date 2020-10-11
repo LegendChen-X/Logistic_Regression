@@ -41,7 +41,7 @@ def save(file_name, data):
     """ Saves the model to a numpy file.
     """
     print("Writing to " + file_name)
-    np.savez_compressed(file_name, **data)
+    np.savez_compressed(file_name, data)
 
 
 def load(file_name):

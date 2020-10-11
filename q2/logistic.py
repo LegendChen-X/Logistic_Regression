@@ -71,6 +71,7 @@ def logistic(weights, data, targets, hyperparameters):
     :returns: A tuple (f, df, y)
         WHERE
         f: The average of the loss over all data points.
+           This is the same as averaged cross entropy.
            This is the objective that we want to minimize.
         df: (M + 1) x 1 vector of derivative of f w.r.t. weights.
         y: N x 1 vector of probabilities.
@@ -83,6 +84,7 @@ def logistic(weights, data, targets, hyperparameters):
     # points, gradient of parameters, and the probabilities given by    #
     # logistic regression.                                              #
     #####################################################################
+    # Hint: hyperparameters will not be used here.
     f = None
     df = None
     #####################################################################
