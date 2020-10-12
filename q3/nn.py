@@ -16,7 +16,7 @@ the lines in "main()".
 """
 
 
-from q3.utils import load_data, load, save, display_plot
+from utils import load_data, load, save, display_plot
 import numpy as np
 
 
@@ -72,9 +72,9 @@ def affine_backward(grad_y, x, w):
     # Complete the function to compute the gradients of affine          #
     # transformation.                                                   #
     #####################################################################
-    grad_x = None
-    grad_w = None
-    grad_b = None
+    grad_x = grad_y.dot(w.T)
+    grad_w = (h.T).dot(grad_y)
+    grad_b = np.sum(grad_y, axis=0)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
