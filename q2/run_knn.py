@@ -1,8 +1,10 @@
-from q2.l2_distance import l2_distance
-from q2.utils import *
+from l2_distance import l2_distance
+from utils import *
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 
 
 def knn(k, train_data, train_labels, valid_data):
@@ -47,11 +49,43 @@ def run_knn():
     # Implement a function that runs kNN for different values of k,     #
     # plots the classification rate on the validation set, and etc.     #
     #####################################################################
-
-    #####################################################################
-    #                       END OF YOUR CODE                            #
-    #####################################################################
-
+    class_list = []
+    k_sets = [1,3,5,7,9]
+    for k in k_sets:
+        prediction = knn(k, train_inputs, train_targets, valid_inputs)
+        counter = 0
+        for i in range(prediction.size):
+            if(prediction[i]==valid_targets[i]): counter += 1
+        class_rate = counter / valid_targets.size
+        class_list.append(class_rate)
+        
+    plt.plot(k_sets,class_list,label="valiadtion")
+    plt.xlabel("k")
+    plt.ylabel("classification_rate")
+    plt.xticks(k_sets)
+    plt.legend()
+    plt.show()
+    k_test = [1,3,5]
 
 if __name__ == "__main__":
     run_knn()
+    train_inputs, train_targets = load_train()
+    test_inputs, test_targets = load_test()
+    k_test = [1,3,5]
+    class_list = []
+    for k in k_test:
+        prediction = knn(k, train_inputs, train_targets, test_inputs)
+        counter = 0
+        for i in range(prediction.size):
+            if(prediction[i]==test_targets[i]): counter += 1
+        class_rate = counter / test_targets.size
+        class_list.append(class_rate)
+    plt.plot(k_test,class_list,label="testing")
+    plt.xlabel("k*")
+    plt.ylabel("classification_rate")
+    plt.xticks(k_test)
+    plt.legend()
+    plt.show()
+    #####################################################################
+    #                       END OF YOUR CODE                            #
+    #####################################################################

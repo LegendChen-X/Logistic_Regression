@@ -1,6 +1,7 @@
-from q2.utils import sigmoid
+from utils import sigmoid
 
 import numpy as np
+from numpy import mean
 
 
 def logistic_predict(weights, data):
@@ -21,13 +22,18 @@ def logistic_predict(weights, data):
     # Given the weights and bias, compute the probabilities predicted   #
     # by the logistic classifier.                                       #
     #####################################################################
-    y = None
+    N, M = data.shape
+    data_buff = np.ones((N,M+1))
+    for i in range(N):
+        for j in range(M):
+            data_buff[i][j] = data[i][j]
+    y = np.dot(data_buff, weights)
+    y = sigmoid(y)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
     return y
-
-
+    
 def evaluate(targets, y):
     """ Compute evaluation metrics.
 
@@ -47,8 +53,12 @@ def evaluate(targets, y):
     # return cross entropy and the fraction of inputs classified        #
     # correctly.                                                        #
     #####################################################################
-    ce = None
-    frac_correct = None
+    counter = 0
+    for i in range(targets.size):
+        if (y[i]>=0.5 and targets[i]==1) or (y[i]<0.5 and targets[i]==0):
+            counter += 1
+    ce = (-np.dot(targets.T, np.log(y)) - (np.dot((1-targets).T, np.log(1-y)))) / targets.size
+    frac_correct = counter / len(targets)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -85,8 +95,13 @@ def logistic(weights, data, targets, hyperparameters):
     # logistic regression.                                              #
     #####################################################################
     # Hint: hyperparameters will not be used here.
-    f = None
-    df = None
+    f, frac_correct = evaluate(targets, y)
+    N, M = data.shape
+    data_buff = np.ones((N,M+1))
+    for i in range(N):
+        for j in range(M):
+            data_buff[i][j] = data[i][j]
+    df = np.dot(data_buff.T, y - targets)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -121,6 +136,7 @@ def logistic_pen(weights, data, targets, hyperparameters):
     # points (plus a penalty term), gradient of parameters, and the     #
     # probabilities given by penalized logistic regression.             #
     #####################################################################
+    
     f = None
     df = None
     #####################################################################
