@@ -73,7 +73,7 @@ def affine_backward(grad_y, x, w):
     # transformation.                                                   #
     #####################################################################
     grad_x = grad_y.dot(w.T)
-    grad_w = (h.T).dot(grad_y)
+    grad_w = (x.T).dot(grad_y)
     grad_b = np.sum(grad_y, axis=0)
     #####################################################################
     #                       END OF YOUR CODE                            #
@@ -171,7 +171,12 @@ def nn_update(model, alpha):
     # model["W2"] = ...                                                 #
     # ...                                                               #
     #####################################################################
-
+    model["W1"] -= alpha * model["dE_dW1"]
+    model["W2"] -= alpha * model["dE_dW2"]
+    model["W3"] -= alpha * model["dE_dW3"]
+    model["b1"] -= alpha * model["dE_db1"]
+    model["b2"] -= alpha * model["dE_db2"]
+    model["b3"] -= alpha * model["dE_db3"]
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
