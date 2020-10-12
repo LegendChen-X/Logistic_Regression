@@ -58,11 +58,12 @@ def evaluate(targets, y):
         if (y[i]>=0.5 and targets[i]==1) or (y[i]<0.5 and targets[i]==0):
             counter += 1
     ce = (-np.dot(targets.T, np.log(y)) - (np.dot((1-targets).T, np.log(1-y)))) / targets.size
+    
     frac_correct = counter / len(targets)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
-    return ce, frac_correct
+    return ce.reshape(1), frac_correct
 
 
 def logistic(weights, data, targets, hyperparameters):
@@ -136,9 +137,19 @@ def logistic_pen(weights, data, targets, hyperparameters):
     # points (plus a penalty term), gradient of parameters, and the     #
     # probabilities given by penalized logistic regression.             #
     #####################################################################
+    N, M = data.shape
+    lambd = hyperparameters["weight_decay"]
+    y = logistic_predict(weights, data)
+    ce, frac_correct = evaluate(targets, y)
     
-    f = None
-    df = None
+    f = ce + (lambd/2) * np.sum(weights.T * weights)
+    data_buff = np.ones((N,M+1))
+    for i in range(N):
+        for j in range(M):
+            data_buff[i][j] = data[i][j]
+            
+    df = np.dot(data_buff.T,y - targets) + lambd * weights
+    
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################

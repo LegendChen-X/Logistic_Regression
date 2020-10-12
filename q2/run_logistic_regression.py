@@ -21,7 +21,7 @@ def run_logistic_regression():
     hyperparameters = {
         "learning_rate": 0.001,
         "weight_regularization": 0.,
-        "num_iterations": 10
+        "num_iterations": 1000
     }
     weights = np.random.uniform(-1,1,(M + 1, 1))
     #####################################################################
@@ -56,20 +56,22 @@ def run_logistic_regression():
         correct_valids.append(frac_correct_valid)
         
         iterations.append(t)
-    print(ce_trains)
     
     plt.plot(iterations,ce_trains,label="Train Cross Entropy")
     plt.plot(iterations,ce_valids,label="Valid Cross Entropy")
     plt.xlabel("iterations")
     plt.ylabel("average cross entropy")
+    plt.title("Average Cross Entropy")
     plt.legend()
-    
+    plt.show()
     
     plt.plot(iterations,correct_trains,label="Train Correct Rate")
     plt.plot(iterations,correct_valids ,label="Valid Correct Rate")
     plt.xlabel("iterations")
     plt.ylabel("correct rate")
+    plt.title("Average Classification Rate")
     plt.legend()
+    plt.show()
     
     
         
@@ -83,14 +85,56 @@ def run_pen_logistic_regression():
     # train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
 
-    N, M = train_inputs.shape
-
     #####################################################################
     # TODO:                                                             #
     # Implement the function that automatically evaluates different     #
     # penalty and re-runs penalized logistic regression 5 times.        #
     #####################################################################
-    pass
+    N, M = train_inputs.shape
+    hyperparameters = {
+        "learning_rate": 0.001,
+        "weight_decay": 0.,
+        "num_iterations": 50
+    }
+    weights = np.random.uniform(-1,1,(M + 1, 1))
+    lambd_list = [0, 0.001, 0.01, 0.1, 1.0]
+    run_check_grad(hyperparameters)
+    
+    for r in range(len(lambd_list)):
+        hyperparameters["weight_decay"] = lambd_list[r]
+        ce_trains = []
+        ce_valids = []
+        correct_trains = []
+        correct_valids = []
+        iterations = []
+        for t in range(hyperparameters["num_iterations"]):
+            f, df, y = logistic_pen(weights, train_inputs, train_targets, hyperparameters)
+            ce_train, frac_correct_train = evaluate(train_targets, y)
+            ce_trains.append(ce_train)
+            correct_trains.append(frac_correct_train)
+            
+            weights = weights - (hyperparameters['learning_rate'] * df) / N
+            y_valid = logistic_predict(weights, valid_inputs)
+            ce_valid, frac_correct_valid = evaluate(valid_targets, y_valid)
+            ce_valids.append(ce_valid)
+            correct_valids.append(frac_correct_valid)
+            iterations.append(t)
+        print(ce_trains)
+        plt.plot(iterations,ce_trains,label="Train Cross Entropy")
+        plt.plot(iterations,ce_valids,label="Valid Cross Entropy")
+        plt.xlabel("iterations")
+        plt.ylabel("average cross entropy")
+        plt.title("Average Cross Entropy for lamda {}".format(lambd_list[r]))
+        plt.legend()
+        plt.show()
+        
+        plt.plot(iterations,correct_trains,label="Train Correct Rate")
+        plt.plot(iterations,correct_valids ,label="Valid Correct Rate")
+        plt.xlabel("iterations")
+        plt.ylabel("correct rate")
+        plt.title("Average Classification Rate for lamda {}".format(lambd_list[r]))
+        plt.legend()
+        plt.show()
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -120,5 +164,5 @@ def run_check_grad(hyperparameters):
 
 
 if __name__ == "__main__":
-    run_logistic_regression()
+    #run_logistic_regression()
     run_pen_logistic_regression()
