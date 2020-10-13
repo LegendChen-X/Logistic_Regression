@@ -99,7 +99,7 @@ def relu_backward(grad_y, x):
     # TODO:                                                             #
     # Complete the function to compute the gradients of relu.           #
     #####################################################################
-    grad_x = None
+    grad_x = grad_y * (x > 0).astype(float)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################

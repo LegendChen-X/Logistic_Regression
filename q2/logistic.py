@@ -23,10 +23,7 @@ def logistic_predict(weights, data):
     # by the logistic classifier.                                       #
     #####################################################################
     N, M = data.shape
-    data_buff = np.ones((N,M+1))
-    for i in range(N):
-        for j in range(M):
-            data_buff[i][j] = data[i][j]
+    data_buff = np.concatenate((data, np.ones((N, 1))), axis=1)
     y = np.dot(data_buff, weights)
     y = sigmoid(y)
     #####################################################################
@@ -57,13 +54,13 @@ def evaluate(targets, y):
     for i in range(targets.size):
         if (y[i]>=0.5 and targets[i]==1) or (y[i]<0.5 and targets[i]==0):
             counter += 1
-    ce = (-np.dot(targets.T, np.log(y)) - (np.dot((1-targets).T, np.log(1-y)))) / targets.size
+    ce = (-np.dot(targets.T, np.log(y)) - (np.dot((1-targets).T, np.log(1-y)))) / float(targets.size)
     
-    frac_correct = counter / len(targets)
+    frac_correct = counter / float(len(targets))
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
-    return ce.reshape(1), frac_correct
+    return ce[0], frac_correct
 
 
 def logistic(weights, data, targets, hyperparameters):
@@ -98,11 +95,8 @@ def logistic(weights, data, targets, hyperparameters):
     # Hint: hyperparameters will not be used here.
     f, frac_correct = evaluate(targets, y)
     N, M = data.shape
-    data_buff = np.ones((N,M+1))
-    for i in range(N):
-        for j in range(M):
-            data_buff[i][j] = data[i][j]
-    df = np.dot(data_buff.T, y - targets)
+    data_buff = np.concatenate((data, np.ones((N, 1))), axis=1)
+    df = np.dot(data_buff.T, y - targets) / float(N)
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -141,15 +135,9 @@ def logistic_pen(weights, data, targets, hyperparameters):
     lambd = hyperparameters["weight_decay"]
     y = logistic_predict(weights, data)
     ce, frac_correct = evaluate(targets, y)
-    
     f = ce + (lambd/2) * np.sum(weights.T * weights)
-    data_buff = np.ones((N,M+1))
-    for i in range(N):
-        for j in range(M):
-            data_buff[i][j] = data[i][j]
-            
-    df = np.dot(data_buff.T,y - targets) + lambd * weights
-    
+    data_buff = np.concatenate((data, np.ones((N, 1))), axis=1)
+    df = np.dot(data_buff.T,y - targets) / float(N) + lambd * weights
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
