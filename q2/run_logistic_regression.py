@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def run_logistic_regression():
-    #train_inputs, train_targets = load_train()
-    train_inputs, train_targets = load_train_small()
+    train_inputs, train_targets = load_train()
+    #train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
 
     N, M = train_inputs.shape
@@ -20,11 +20,11 @@ def run_logistic_regression():
     hyperparameters = {
         "learning_rate": 0.001,
         "weight_regularization": 0.,
-        "num_iterations": 1000
+        "num_iterations": 2000
     }
 
     #weights = np.random.uniform(-1,1,(M + 1, 1))
-    weights = np.random.randn(len(train_inputs[1])+1, 1) * 0.01
+    weights = np.random.randn(len(train_inputs[1])+1, 1) * 0.1
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -74,6 +74,16 @@ def run_logistic_regression():
     plt.legend()
     plt.show()
     
+    final_f, final_df, final_y = logistic(weights, train_inputs, train_targets, hyperparameters)
+    final_ce_train, final_frac_correct_train = evaluate(train_targets, final_y)
+    final_y_valid = logistic_predict(weights, valid_inputs)
+    final_ce_valid, final_frac_correct_valid = evaluate(valid_targets, final_y_valid)
+    
+    print("CE: Train %.5f Validation %.5f" %
+          (final_ce_train, final_ce_valid))
+    print("Acc: Train {:.5f} Validation {:.5f}".format(
+    1-final_frac_correct_train, 1-final_frac_correct_valid))
+    
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -101,7 +111,7 @@ def run_pen_logistic_regression():
     run_time = 5
     
     for l in range(len(lambd_list)):
-        hyperparameters["weight_decay"] = lambd_list[l]
+        hyperparameters["weight_decay"] = lambd_list[4]
         # print(hyperparameters["weight_decay"])
         ce_trains = np.zeros(hyperparameters["num_iterations"])
         ce_valids = np.zeros(hyperparameters["num_iterations"])
@@ -170,5 +180,5 @@ def run_check_grad(hyperparameters):
 
 
 if __name__ == "__main__":
-    #run_logistic_regression()
-    run_pen_logistic_regression()
+    run_logistic_regression()
+    #run_pen_logistic_regression()
