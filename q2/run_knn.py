@@ -71,7 +71,7 @@ if __name__ == "__main__":
     run_knn()
     train_inputs, train_targets = load_train()
     test_inputs, test_targets = load_test()
-    k_test = [1,3,5]
+    k_test = [3,5,7]
     class_list = []
     for k in k_test:
         prediction = knn(k, train_inputs, train_targets, test_inputs)
@@ -80,6 +80,7 @@ if __name__ == "__main__":
             if(prediction[i]==test_targets[i]): counter += 1
         class_rate = counter / test_targets.size
         class_list.append(class_rate)
+    print(class_list)
     plt.plot(k_test,class_list,label="testing")
     plt.xlabel("k*")
     plt.ylabel("classification_rate")

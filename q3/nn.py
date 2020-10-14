@@ -344,9 +344,7 @@ def plot(x,y,prediction):
             plt.imshow(x[i].reshape(w,h))
             print("P_max:{}, Predicted: {}, Target: {}".format(np.max(prediction[i]), names[np.argmax(prediction[i])],names[np.argmax(y[i])]))
             plt.show()
-            input("press enter to continue")
     return
-
 
 def main():
     """ Trains a neural network.
@@ -382,11 +380,11 @@ def main():
     check_grad(model, nn_forward, nn_backward, "b1", x)
 
     # Train model.
-    states = train(model, nn_forward, nn_backward, nn_update, alpha,
+    stats = train(model, nn_forward, nn_backward, nn_update, alpha,
                   num_epochs, batch_size)
                   
     inputs_train, inputs_valid, inputs_test, target_train, target_valid, target_test = load_data("data/toronto_face.npz")
-    var = nn_forward(states[0], inputs_test[:])
+    var = nn_forward(stats[0], inputs_test[:])
     prediction = softmax(var["y"])
     plot(inputs_test,target_test,prediction)
     # Uncomment if you wish to save the model.
