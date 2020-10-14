@@ -18,7 +18,7 @@ the lines in "main()".
 
 from utils import load_data, load, save, display_plot
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def init_nn(num_inputs, num_hiddens, num_outputs):
     """ Initializes neural network's parameters.
@@ -332,6 +332,20 @@ def check_grad(model, forward, backward, name, x):
         grad_w_2[ii] = (err_plus - err_minus) / 2. / eps
     np.testing.assert_almost_equal(grad_w[check_elem], grad_w_2[check_elem],
                                    decimal=3)
+                                   
+def plot(x,y,prediction):
+    target = np.max(prediction,axis=1)<0.5
+    names = ['anger','disgust','fear','happy','sad','surprise','neutral']
+    if np.sum(target)>0:
+        for i in np.where(target>0)[0]:
+            plt.figure()
+            w = int(np.sqrt(2304))
+            h = int(np.sqrt(2304))
+            plt.imshow(x[i].reshape(w,h))
+            print("P_max:{}, Predicted: {}, Target: {}".format(np.max(prediction[i]), names[np.argmax(prediction[i])],names[np.argmax(y[i])]))
+            plt.show()
+            input("press enter to continue")
+    return
 
 
 def main():
@@ -345,7 +359,7 @@ def main():
     num_hiddens = [16, 32]
     alpha = 0.005
     num_epochs = 1000
-    batch_size = 1000
+    batch_size = 100
 
     # Input-output dimensions.
     num_inputs = 2304
@@ -368,15 +382,19 @@ def main():
     check_grad(model, nn_forward, nn_backward, "b1", x)
 
     # Train model.
-    stats = train(model, nn_forward, nn_backward, nn_update, alpha,
+    states = train(model, nn_forward, nn_backward, nn_update, alpha,
                   num_epochs, batch_size)
-
+                  
+    inputs_train, inputs_valid, inputs_test, target_train, target_valid, target_test = load_data("data/toronto_face.npz")
+    var = nn_forward(states[0], inputs_test[:])
+    prediction = softmax(var["y"])
+    plot(inputs_test,target_test,prediction)
     # Uncomment if you wish to save the model.
     # save(model_file_name, model)
 
     # Uncomment if you wish to save the training statistics.
     # save(stats_file_name, stats)
 
-
 if __name__ == "__main__":
     main()
+    
