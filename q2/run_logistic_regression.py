@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def run_logistic_regression():
-    train_inputs, train_targets = load_train()
-    # train_inputs, train_targets = load_train_small()
+    #train_inputs, train_targets = load_train()
+    train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
 
     N, M = train_inputs.shape
@@ -80,8 +80,8 @@ def run_logistic_regression():
 
 
 def run_pen_logistic_regression():
-    train_inputs, train_targets = load_train()
-    # train_inputs, train_targets = load_train_small()
+    #train_inputs, train_targets = load_train()
+    train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
     
     #####################################################################
@@ -93,7 +93,7 @@ def run_pen_logistic_regression():
     hyperparameters = {
         "learning_rate": 0.001,
         "weight_decay": 0.,
-        "num_iterations": 2000
+        "num_iterations": 1000
     }
     lambd_list = [0, 0.001, 0.01, 0.1, 1.0]
     run_check_grad(hyperparameters)
@@ -102,7 +102,7 @@ def run_pen_logistic_regression():
     
     for l in range(len(lambd_list)):
         hyperparameters["weight_decay"] = lambd_list[l]
-        print(hyperparameters["weight_decay"])
+        # print(hyperparameters["weight_decay"])
         ce_trains = np.zeros(hyperparameters["num_iterations"])
         ce_valids = np.zeros(hyperparameters["num_iterations"])
         correct_trains = np.zeros(hyperparameters["num_iterations"])
@@ -110,12 +110,12 @@ def run_pen_logistic_regression():
         iterations = [i for i in range(1,hyperparameters["num_iterations"]+1)]
         
         for r in range(run_time):
-            weights = np.random.randn(len(train_inputs[1]) + 1, 1) * 0.01
+            weights = np.random.randn(len(train_inputs[1]) + 1, 1) * 0.001
             
             for t in range(hyperparameters["num_iterations"]):
                 f, df, y = logistic_pen(weights, train_inputs, train_targets, hyperparameters)
                 ce_train, frac_correct_train = evaluate(train_targets, y)
-                ce_trains[t] += (ce_train / run_time)
+                ce_trains[t] += (f / run_time)
                 #correct_trains[t] += (frac_correct_train / run_time)
             
                 weights = weights - hyperparameters['learning_rate'] * df
@@ -170,5 +170,5 @@ def run_check_grad(hyperparameters):
 
 
 if __name__ == "__main__":
-    run_logistic_regression()
+    #run_logistic_regression()
     run_pen_logistic_regression()

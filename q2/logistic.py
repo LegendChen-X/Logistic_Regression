@@ -133,11 +133,14 @@ def logistic_pen(weights, data, targets, hyperparameters):
     #####################################################################
     N, M = data.shape
     lambd = hyperparameters["weight_decay"]
+    w = weights[:-1]
     y = logistic_predict(weights, data)
     ce, frac_correct = evaluate(targets, y)
-    f = ce + (lambd/2) * np.sum(weights.T * weights)
+    # f = ce
+    f = ce + (lambd/2) * np.sum(w.T * w)
     data_buff = np.concatenate((data, np.ones((N, 1))), axis=1)
-    df = np.dot(data_buff.T,y - targets) / float(N) + lambd * weights
+    weight_buff = np.copy(weights)
+    df = np.dot(data_buff.T,y - targets) / float(N) + lambd * weight_buff
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
