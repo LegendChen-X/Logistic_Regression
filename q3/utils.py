@@ -69,4 +69,4 @@ def display_plot(train, valid, y_label, number=0):
     plt.ylabel(y_label)
     plt.legend()
     plt.draw()
-    plt.pause(0.0001)
+    plt.pause(100)

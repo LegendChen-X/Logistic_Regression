@@ -253,7 +253,7 @@ def train(model, forward, backward, update, alpha, num_epochs, batch_size):
         valid_acc_list.append((epoch, valid_acc))
     display_plot(train_ce_list, valid_ce_list, "Cross Entropy", number=0)
     display_plot(train_acc_list, valid_acc_list, "Accuracy", number=1)
-
+    
     train_ce, train_acc = evaluate(
         inputs_train, target_train, model, forward, batch_size=batch_size)
     valid_ce, valid_acc = evaluate(
@@ -343,9 +343,9 @@ def main():
 
     # Hyper-parameters. Modify them if needed.
     num_hiddens = [16, 32]
-    alpha = 0.01
+    alpha = 0.005
     num_epochs = 1000
-    batch_size = 100
+    batch_size = 1000
 
     # Input-output dimensions.
     num_inputs = 2304
