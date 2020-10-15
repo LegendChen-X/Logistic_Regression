@@ -3,7 +3,6 @@ from utils import sigmoid
 import numpy as np
 from numpy import mean
 
-
 def logistic_predict(weights, data):
     """ Compute the probabilities predicted by the logistic classifier.
 
@@ -55,7 +54,6 @@ def evaluate(targets, y):
         if (y[i]>=0.5 and targets[i]==1) or (y[i]<0.5 and targets[i]==0):
             counter += 1
     ce = (-np.dot(targets.T, np.log(y)) - (np.dot((1-targets).T, np.log(1-y)))) / float(targets.size)
-    
     frac_correct = counter / float(len(targets))
     #####################################################################
     #                       END OF YOUR CODE                            #
@@ -85,7 +83,6 @@ def logistic(weights, data, targets, hyperparameters):
         y: N x 1 vector of probabilities.
     """
     y = logistic_predict(weights, data)
-
     #####################################################################
     # TODO:                                                             #
     # Given weights and data, return the averaged loss over all data    #
@@ -124,7 +121,6 @@ def logistic_pen(weights, data, targets, hyperparameters):
         y: N x 1 vector of probabilities.
     """
     y = logistic_predict(weights, data)
-
     #####################################################################
     # TODO:                                                             #
     # Given weights and data, return the averaged loss over all data    #
@@ -136,10 +132,10 @@ def logistic_pen(weights, data, targets, hyperparameters):
     w = weights[:-1]
     y = logistic_predict(weights, data)
     ce, frac_correct = evaluate(targets, y)
-    # f = ce
-    f = ce + (lambd/2) * np.sum(w.T * w)
+    f = ce + (lambd/2) * np.sum(w * w)
     data_buff = np.concatenate((data, np.ones((N, 1))), axis=1)
     weight_buff = np.copy(weights)
+    weight_buff[-1] = 0
     df = np.dot(data_buff.T,y - targets) / float(N) + lambd * weight_buff
     #####################################################################
     #                       END OF YOUR CODE                            #

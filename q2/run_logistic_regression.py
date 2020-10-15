@@ -6,10 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def run_logistic_regression():
-    train_inputs, train_targets = load_train()
-    #train_inputs, train_targets = load_train_small()
+    #train_inputs, train_targets = load_train()
+    train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
-
     N, M = train_inputs.shape
 
     #####################################################################
@@ -18,13 +17,11 @@ def run_logistic_regression():
     # of iterations, and the way in which you initialize the weights.   #
     #####################################################################
     hyperparameters = {
-        "learning_rate": 0.001,
-        "weight_regularization": 0.,
-        "num_iterations": 2000
+    "learning_rate": 0.008,
+    "weight_regularization": 0.,
+    "num_iterations": 2000
     }
-
-    #weights = np.random.uniform(-1,1,(M + 1, 1))
-    weights = np.random.randn(len(train_inputs[1])+1, 1) * 0.1
+    weights = np.random.randn(len(train_inputs[1])+1, 1) * 0.01
     #####################################################################
     #                       END OF YOUR CODE                            #
     #####################################################################
@@ -32,7 +29,6 @@ def run_logistic_regression():
     # Verify that your logistic function produces the right gradient.
     # diff should be very close to 0.
     run_check_grad(hyperparameters)
-
     # Begin learning with gradient descent
     #####################################################################
     # TODO:                                                             #
@@ -49,15 +45,13 @@ def run_logistic_regression():
         ce_train, frac_correct_train = evaluate(train_targets, y)
         ce_trains.append(ce_train)
         correct_trains.append(frac_correct_train)
-        
         weights = weights - hyperparameters['learning_rate'] * df
         y_valid = logistic_predict(weights, valid_inputs)
         ce_valid, frac_correct_valid = evaluate(valid_targets, y_valid)
         ce_valids.append(ce_valid)
         correct_valids.append(frac_correct_valid)
-        
         iterations.append(t)
-    
+
     plt.plot(iterations,ce_trains,label="Train Cross Entropy")
     plt.plot(iterations,ce_valids,label="Valid Cross Entropy")
     plt.xlabel("iterations")
@@ -65,75 +59,48 @@ def run_logistic_regression():
     plt.title("Average Cross Entropy")
     plt.legend()
     plt.show()
-    
-    plt.plot(iterations,correct_trains,label="Train Correct Rate")
-    plt.plot(iterations,correct_valids ,label="Valid Correct Rate")
-    plt.xlabel("iterations")
-    plt.ylabel("correct rate")
-    plt.title("Average Classification Rate")
-    plt.legend()
-    plt.show()
-    
-    final_f, final_df, final_y = logistic(weights, train_inputs, train_targets, hyperparameters)
-    final_ce_train, final_frac_correct_train = evaluate(train_targets, final_y)
-    final_y_valid = logistic_predict(weights, valid_inputs)
-    final_ce_valid, final_frac_correct_valid = evaluate(valid_targets, final_y_valid)
-    
-    print("CE: Train %.5f Validation %.5f" %
-          (final_ce_train, final_ce_valid))
-    print("Acc: Train {:.5f} Validation {:.5f}".format(
-    1-final_frac_correct_train, 1-final_frac_correct_valid))
-    
-    #####################################################################
-    #                       END OF YOUR CODE                            #
-    #####################################################################
 
 
 def run_pen_logistic_regression():
-    #train_inputs, train_targets = load_train()
-    train_inputs, train_targets = load_train_small()
+    train_inputs, train_targets = load_train()
+    #train_inputs, train_targets = load_train_small()
     valid_inputs, valid_targets = load_valid()
-    
-    #####################################################################
-    # TODO:                                                             #
-    # Implement the function that automatically evaluates different     #
-    # penalty and re-runs penalized logistic regression 5 times.        #
-    #####################################################################
     N, M = train_inputs.shape
     hyperparameters = {
-        "learning_rate": 0.001,
-        "weight_decay": 0.,
-        "num_iterations": 1000
+    "learning_rate": 0.008,
+    "weight_decay": 0.,
+    "num_iterations": 2000
     }
     lambd_list = [0, 0.001, 0.01, 0.1, 1.0]
     run_check_grad(hyperparameters)
-    
-    run_time = 5
-    
+    run_time = 1
     for l in range(len(lambd_list)):
-        hyperparameters["weight_decay"] = lambd_list[4]
-        # print(hyperparameters["weight_decay"])
+        hyperparameters["weight_decay"] = lambd_list[l]
         ce_trains = np.zeros(hyperparameters["num_iterations"])
         ce_valids = np.zeros(hyperparameters["num_iterations"])
         correct_trains = np.zeros(hyperparameters["num_iterations"])
         correct_valids = np.zeros(hyperparameters["num_iterations"])
         iterations = [i for i in range(1,hyperparameters["num_iterations"]+1)]
-        
         for r in range(run_time):
-            weights = np.random.randn(len(train_inputs[1]) + 1, 1) * 0.001
-            
+            weights = np.random.randn(len(train_inputs[1]) + 1, 1) * 0.01
             for t in range(hyperparameters["num_iterations"]):
                 f, df, y = logistic_pen(weights, train_inputs, train_targets, hyperparameters)
                 ce_train, frac_correct_train = evaluate(train_targets, y)
-                ce_trains[t] += (f / run_time)
-                #correct_trains[t] += (frac_correct_train / run_time)
-            
-                weights = weights - hyperparameters['learning_rate'] * df
+                ce_trains[t] += (ce_train / run_time)
+                correct_trains[t] += (frac_correct_train / run_time)
+                weights = weights - hyperparameters["learning_rate"] * df
                 y_valid = logistic_predict(weights, valid_inputs)
                 ce_valid, frac_correct_valid = evaluate(valid_targets, y_valid)
                 ce_valids[t] += (ce_valid / run_time)
-                #correct_valids[t] += (frac_correct_valid / run_time)
-        
+                correct_valids[t] += (frac_correct_valid / run_time)
+        train_ce_avg = np.mean(ce_trains, axis=0)
+        valid_ce_avg = np.mean(ce_valids, axis=0)
+        train_crList_avg = np.mean(correct_trains, axis=0)
+        valid_cr_avg = np.mean(correct_valids, axis=0)
+        print("AVG_CE: Train %.5f Validation %.5f" %
+            (train_ce_avg, valid_ce_avg))
+        print("AVG_ERROR: Train {:.5f} Validation {:.5f}".format(
+        1-train_crList_avg, 1-valid_cr_avg))
         plt.plot(iterations,ce_trains,label="Train Cross Entropy")
         plt.plot(iterations,ce_valids,label="Valid Cross Entropy")
         plt.xlabel("iterations")
@@ -141,20 +108,6 @@ def run_pen_logistic_regression():
         plt.title("Average Cross Entropy for lamda {}".format(lambd_list[l]))
         plt.legend()
         plt.show()
-        
-        '''
-        plt.plot(iterations,correct_trains,label="Train Correct Rate")
-        plt.plot(iterations,correct_valids ,label="Valid Correct Rate")
-        plt.xlabel("iterations")
-        plt.ylabel("correct rate")
-        plt.title("Average Classification Rate for lamda {}".format(lambd_list[l]))
-        plt.legend()
-        plt.show()
-        '''
-    #####################################################################
-    #                       END OF YOUR CODE                            #
-    #####################################################################
-
 
 def run_check_grad(hyperparameters):
     """ Performs gradient check on logistic function.
